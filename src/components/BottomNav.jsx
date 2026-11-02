@@ -4,7 +4,7 @@ const navigationItems = [
   { id: "home", label: "Главная", Icon: House },
   { id: "search", label: "Поиск", Icon: Search },
   { id: "favorites", label: "Избранное", Icon: Heart },
-  { id: "settings", label: "Настройки", Icon: Settings, disabled: true },
+  { id: "settings", label: "Настройки", Icon: Settings },
 ];
 
 export default function BottomNav({ activeView, onNavigate }) {

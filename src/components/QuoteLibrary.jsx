@@ -1,11 +1,27 @@
 import { useState } from "react";
 import QuoteCard from "./QuoteCard";
 
+function formatQuoteCount(count) {
+  const remainder = count % 10;
+  const lastTwoDigits = count % 100;
+  const word =
+    remainder === 1 && lastTwoDigits !== 11
+      ? "цитата"
+      : remainder >= 2 &&
+          remainder <= 4 &&
+          (lastTwoDigits < 12 || lastTwoDigits > 14)
+        ? "цитаты"
+        : "цитат";
+
+  return `${count} ${word}`;
+}
+
 export default function QuoteLibrary({
   mode,
   quotes,
   favoriteIds,
   onToggleFavorite,
+  quoteTextSize,
 }) {
   const [query, setQuery] = useState("");
   const isFavorites = mode === "favorites";
@@ -18,7 +34,9 @@ export default function QuoteLibrary({
       quote.quote,
       quote.author,
       quote.source,
+      quote.location,
       quote.medium,
+      quote.explanation,
     ]
       .filter(Boolean)
       .join(" ")
@@ -46,6 +64,9 @@ export default function QuoteLibrary({
             className="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-base text-slate-100 outline-none placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30"
           />
         </label>
+        <p className="mt-3 text-sm text-slate-400" aria-live="polite">
+          {formatQuoteCount(visibleQuotes.length)}
+        </p>
       </div>
 
       {visibleQuotes.length > 0 ? (
@@ -56,6 +77,7 @@ export default function QuoteLibrary({
               quoteData={quote}
               isFavorite={favoriteIds.includes(quote.id)}
               onToggleFavorite={() => onToggleFavorite(quote.id)}
+              quoteTextSize={quoteTextSize}
             />
           ))}
         </div>

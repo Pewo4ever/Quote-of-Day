@@ -6,9 +6,15 @@ export default function QuoteCard({
   quoteDate,
   isFavorite = false,
   onToggleFavorite,
+  quoteTextSize = "normal",
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const explanationId = `quote-explanation-${quoteData.id}`;
+  const quoteTextClasses = {
+    small: "text-lg sm:text-xl",
+    normal: "text-xl sm:text-2xl",
+    large: "text-2xl sm:text-3xl",
+  }[quoteTextSize];
 
   return (
     <article className="my-auto w-full max-w-md px-1 sm:px-0">
@@ -35,7 +41,9 @@ export default function QuoteCard({
         </button>
 
         <div className="my-6 px-1 text-center sm:px-2">
-          <blockquote className="font-serif text-xl leading-relaxed sm:text-2xl">
+          <blockquote
+            className={`font-serif leading-relaxed ${quoteTextClasses}`}
+          >
             {quoteData.quote}
           </blockquote>
           <div className="mx-auto my-4 h-0.5 w-12 bg-rose-600/50" />
@@ -43,7 +51,14 @@ export default function QuoteCard({
             {quoteData.author}
           </p>
           {quoteData.source && (
-            <p className="mt-1 text-sm text-slate-500">{quoteData.source}</p>
+            <a
+              href={quoteData.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 inline-block text-sm text-slate-500 underline decoration-slate-300 underline-offset-4 transition hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-rose-600"
+            >
+              {quoteData.source}
+            </a>
           )}
         </div>
 
@@ -65,6 +80,7 @@ export default function QuoteCard({
         <div
           id={explanationId}
           aria-hidden={!isOpen}
+          inert={!isOpen}
           className={`grid transition-all duration-300 ease-in-out motion-reduce:transition-none ${
             isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
           }`}
@@ -72,6 +88,21 @@ export default function QuoteCard({
           <div className="overflow-hidden">
             <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3 text-sm leading-relaxed text-slate-700">
               {quoteData.explanation}
+            </div>
+            <div className="mt-3 flex flex-col gap-1 px-1 text-left text-xs leading-relaxed text-slate-500">
+              {quoteData.medium && <p>Тип источника: {quoteData.medium}</p>}
+              {quoteData.location && <p>Место: {quoteData.location}</p>}
+              {quoteData.translation && <p>{quoteData.translation}</p>}
+              {quoteData.sourceUrl && (
+                <a
+                  href={quoteData.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1 inline-flex min-h-11 items-center font-medium text-blue-700 underline decoration-blue-300 underline-offset-4 hover:text-blue-900 focus-visible:outline-2 focus-visible:outline-blue-700"
+                >
+                  Проверить источник
+                </a>
+              )}
             </div>
           </div>
         </div>

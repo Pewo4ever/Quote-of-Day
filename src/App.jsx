@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 import QuoteCard from "./components/QuoteCard";
 import QuoteLibrary from "./components/QuoteLibrary";
+import SettingsPanel from "./components/SettingsPanel";
 import { quotes } from "./data/quotesData";
 import { addDays, formatDateKey, toDateKey } from "./utils/date";
 import {
@@ -10,6 +11,10 @@ import {
   readFavoriteIds,
   writeFavoriteIds,
 } from "./utils/quoteStorage";
+import {
+  readQuoteTextSize,
+  writeQuoteTextSize,
+} from "./utils/preferencesStorage";
 
 export default function App() {
   const todayKey = toDateKey(new Date());
@@ -20,6 +25,7 @@ export default function App() {
   });
   const [activeView, setActiveView] = useState("home");
   const [favoriteIds, setFavoriteIds] = useState(readFavoriteIds);
+  const [quoteTextSize, setQuoteTextSize] = useState(readQuoteTextSize);
 
   const isTomorrow = selection.dateKey === tomorrowKey;
 
@@ -32,6 +38,13 @@ export default function App() {
     setSelection({ dateKey, quote });
   }
 
+  function goToToday() {
+    setSelection({
+      dateKey: todayKey,
+      quote: getQuoteForDate(todayKey, quotes),
+    });
+  }
+
   function toggleFavorite(quoteId) {
     const nextFavoriteIds = favoriteIds.includes(quoteId)
       ? favoriteIds.filter((id) => id !== quoteId)
@@ -39,6 +52,11 @@ export default function App() {
 
     setFavoriteIds(nextFavoriteIds);
     writeFavoriteIds(nextFavoriteIds);
+  }
+
+  function changeQuoteTextSize(size) {
+    setQuoteTextSize(size);
+    writeQuoteTextSize(size);
   }
 
   return (
@@ -82,7 +100,7 @@ export default function App() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => changeDay(-1)}
+                  onClick={goToToday}
                   className="mt-6 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
                 >
                   Вернуться к сегодняшней цитате
@@ -95,6 +113,7 @@ export default function App() {
                 quoteDate={formatDateKey(selection.dateKey)}
                 isFavorite={favoriteIds.includes(selection.quote.id)}
                 onToggleFavorite={() => toggleFavorite(selection.quote.id)}
+                quoteTextSize={quoteTextSize}
               />
             ) : (
               <p className="my-auto text-center text-slate-400">
@@ -102,6 +121,11 @@ export default function App() {
               </p>
             )}
           </section>
+        ) : activeView === "settings" ? (
+          <SettingsPanel
+            quoteTextSize={quoteTextSize}
+            onQuoteTextSizeChange={changeQuoteTextSize}
+          />
         ) : (
           <QuoteLibrary
             key={activeView}
@@ -109,6 +133,7 @@ export default function App() {
             quotes={quotes}
             favoriteIds={favoriteIds}
             onToggleFavorite={toggleFavorite}
+            quoteTextSize={quoteTextSize}
           />
         )}
       </main>
